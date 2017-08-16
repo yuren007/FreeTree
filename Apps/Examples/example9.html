@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>项目的事件监听</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .main {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <link href="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/Widgets/widgets.css" rel="stylesheet">
+    <script src="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/FreeDo.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="../../dist/GBIM360/API/FreedoX.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div id="freedoContainer" style="height: 100%;"></div>
+    </div>
+    <div style="position: fixed; z-index: 100; width: 100%; left: 0px; top: 0px; color: white" id="cameraStatus"></div>
+
+    <script>
+        var container = document.getElementById("freedoContainer");
+        var project = Freedo.FdApp.createProject(container);
+
+        var cameraStatusDiv = document.getElementById("cameraStatus");
+        cameraStatusDiv.innerText = "正在准备监听相机事件...";
+        var camera = project.getCamera();
+        var cameraInfo = [];
+        camera.on(function(eventType, param) {
+            camera.getCurrentCameraInfo(cameraInfo);
+            cameraStatusDiv.innerText = "事件类型: " + eventType + " 相机信息(依次是经度、纬度、高度、偏航角、俯仰角、翻滚角)：" + cameraInfo.join(", ");
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Freedo GBIM360 Viewer</title>
+
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link href="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/Widgets/widgets.css" rel="stylesheet">
+    <!-- <link href="http://127.0.0.1:81/FreeDoUnminified/Widgets/widgets.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="http://gbim360.com:9999/txf/fonts/font-awesome/css/font-awesome.min.css">
+    <link href="t2.css" rel="stylesheet">
+    <script src="https://cdn.wilddog.com/sdk/js/2.5.8/wilddog.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.3.4/vue.js"></script>
+    <script src="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/FreeDo.js"></script>
+    <!-- <script src="http://127.0.0.1:81/FreeDoUnminified/FreeDo.js"></script> -->
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+    <!-- <script src="/scripts/qrcode.min.js"></script> -->
+    <script data-main="scripts/fdviewer" src="https://cdn.bootcss.com/require.js/2.3.3/require.min.js"></script>
+    <!--<script src="components/mytest.js"></script>-->
+</head>
+
+<body>
+    <div class="wrapper">
+        <div id="FreedoUI" style="height: 100%;">
+            <div class="FD-home" :class="{ 'open': isShowMenu,'hide': defaultMenu == 0}" @click="toggle()">
+                <i class="fa fa-bars"></i>
+            </div>
+            <div class="FD-phone-bg" :class="{'open': bgPhone}" @click="toggle()">
+            </div>
+            <div class="controller" :class="{ 'open': !isShowMenu}">
+                <div class="FD-option-tool">
+                    <span class="FD-user-login"><i class="fa fa-user-circle-o"></i><span v-if="!currentUser" @click="toggleDialogs('login')">您好，请登录</span><span v-else @click="toggleDialogs('login')" title="点我登出">欢迎您，{{ currentUser }}</span></span>
+                    <span class="FD-close" @click="toggle()"><i class="fa fa-times"></i></span>
+                </div>
+                <div class="FD-login-container" :class="{'open': showLogin}">
+                    <div class="FD-login-box" v-if="!loginStatus">
+                        <p class="FD-login-p">
+                            <span class="FD-login-label">用户名:</span><input class="FD-login-input" type="text" title="用户名" v-model="user">
+                        </p>
+                        <p class="FD-login-p">
+                            <span class="FD-login-label">密码:</span><input class="FD-login-input" type="password" title="密码" v-model="password"@keyup.enter="login(user, password)">
+                        </p>
+                        <p class="FD-login-buttons">
+                            <button class="btn btn-danger FD-button-left" @click="toggleDialogs('closeAll')"><i class="fa fa-sign-out"></i> 返回</button>
+                            <button class="btn btn-success" title="登录" @click="login(user, password)"><i class="fa fa-sign-in"></i> 登录</button>
+                        </p>
+                    </div>
+                    <div class="FD-login-box" v-if="loginStatus">
+                        <p class="FD-login-p">
+                            <span class="FD-login-label">用户名:</span><input class="FD-login-input" type="text" title="用户名" v-model="user" readonly>
+                        </p>
+                        <p class="FD-login-p">
+                            <span class="FD-login-label">密码:</span><input class="FD-login-input" type="password" title="密码" v-model="password" readonly>
+                        </p>
+                        <p class="FD-login-buttons">
+                            <button class="btn btn-default FD-button-left" @click="toggleDialogs('closeAll')"><i class="fa fa-sign-out"></i> 返回</button>
+                            <button class="btn btn-danger" title="退出登录" @click="loginOut()"><i class="fa fa-sign-in"></i> 退出</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="FD-frame-container" :class="{'open': showFrame}">
+                    <div class="FD-frame-box">
+                        <p class="FD-frame-p">
+                            <span class="FD-frame-label">侧边栏:</span>
+                            <input type="checkbox" class="FD-checkbox" id="frame" value="1" v-model="frameArr[2]">
+                            <label for="frame" class="green"></label>
+                        </p>
+                        <p class="FD-frame-p">
+                            <span class="FD-frame-label">宽度:</span><input class="FD-frame-input" type="text" title="宽度" v-model="frameArr[0]"> px(像素)
+                        </p>
+                        <p class="FD-frame-p">
+                            <span class="FD-frame-label">高度:</span><input class="FD-frame-input" type="text" title="高度" v-model="frameArr[1]"> px(像素)
+                        </p>
+                        <textarea class="FD-frame-textarea" row="3" v-model="frameURl" id="copyFrame"></textarea>
+                        <p class="FD-login-buttons">
+                            <button class="btn btn-danger FD-button-left" @click="toggleDialogs('closeAll')"><i class="fa fa-sign-out"></i> 取消引用</button>
+                            <button class="btn btn-success" title="点我复制" @click="copyText('copyFrame')"><i class="fa fa-files-o"></i> 点我复制</button>
+                        </p>
+                    </div>
+                </div>
+                <div class="FD-share-container" :class="{'open': showShare}">
+                    <div id="qrcode" class="FD-share-qrcode"></div>
+                    <span class="FD-share-span">打开“扫一扫”功能，分享到朋友圈。</span>
+                    <textarea class="FD-share-textarea" v-model="shareURL" id="copyUrl"></textarea>
+                    <p class="FD-login-buttons">
+                        <button class="btn btn-danger FD-button-left" @click="toggleDialogs('closeAll')"><i class="fa fa-sign-out"></i> 取消分享</button>
+                        <button class="btn btn-success" title="点我复制" @click="copyText('copyUrl')"><i class="fa fa-files-o"></i> 点我复制</button>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'projects_selecting'" class="FD-switch-container">
+                    <p class="FD-create-new-p">
+                        <span class="FD-create-new-project" title="创建新项目" @click="createProject()"><i class="fa fa-plus"></i> 新增项目</span>
+                    </p>
+                    <p class="FD-title-name">个人项目：</p>
+                    <ul v-if="!loginStatus">
+                        <li>
+                            <p class="FD-unlogin-project">
+                                <img class="FD-unlogin-img" src="images/unlogin_gg.png">
+                                <span class="FD-unlogin-txt"><span class="FD-unlogin-dl" @click="toggleDialogs('login')">点我登陆</span>后才能看到个人项目</span>                                
+                            </p>
+                        </li>
+                    </ul>
+                    <ul v-else>
+                        <li v-if="ownersProjects == ''">
+                            <p class="FD-unlogin-project">
+                                <img class="FD-unlogin-img" src="images/project_gg.png">
+                                <span class="FD-unlogin-txt"><span class="FD-unlogin-dl" @click="createProject()">点我创建</span>首个个人项目</span>
+                            </p>
+                        </li>
+                        <li v-else v-for="project in ownersProjects" class="FD-project-list" @click="openProject(project.id)">
+                            <img :src="project.projectInfo.iconUrl">
+                            <span class="title">{{ project.projectInfo.name }}</span>
+                            <span class="info">{{ project.projectInfo.description }}</span>
+                        </li>
+                    </ul>
+                    <p class="FD-title-name">公开项目：</p>
+                    <!--1场景树start-->
+                    <p class="FD-title-name">场景树</p>
+
+                    <ul class="FD-scenetree-container">
+                        <item class="FD-scene-item" v-for="(item, index) in XMLData" :model="item" :key="index"></item>
+                    </ul>
+                    <!--场景树end-->
+                    <ul>
+                        <li v-for="project in othersPublicProjects" class="FD-project-list" @click="openProject(project.id)">
+                            <img :src="project.projectInfo.iconUrl">
+                            <span class="title">{{ project.projectInfo.name }}</span>
+                            <span class="info">{{ project.projectInfo.description }}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="menuStatus === 'project_browsing'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="closeProject()"><i class="fa fa-chevron-left"></i> 关闭项目</span>
+                        <span class="FD-scene-option" @click="setMenuStatus('settings')"><i class="fa fa-cog"></i></span>
+                    </p>
+                    <p class="FD-title-name">场景结构</p>
+                    <ul>
+                        <li class="FD-scene-list" v-for="sceneObj in sceneObjs">
+                            <input type="checkbox" class="FD-checkbox" :id="sceneObj.id" :value="sceneObj.id" v-model="visibleSceneObjs">
+                            <label :for="sceneObj.id" class="green"></label>
+                            <span class="FD-scene-name" :title="'场景url: ' + getCtrl().getSceneObjUrl(sceneObj.id)">{{ sceneObj.name }}</span>
+                            <span class="FD-fly-to" title="飞入" @click="getCtrl().flytoSceneObj(sceneObj.id)"><i class="fa fa-paper-plane"></i></span>
+                        </li>
+                    </ul>
+                    <!--场景树start-->
+                    <p class="FD-title-name">场景树</p>
+                    <ul class="FD-scenetree-container">
+                        <item class="FD-scene-item" v-for="(item, index) in XMLData" :model="item" :key="index"></item>
+                    </ul>
+                    <!--场景树end-->
+                    <p class="FD-title-name">远程协作</p>
+                    <div class="FD-module-input FD-module-input-one">
+                        <span class="FD-xiezuo-span">协作随机数：</span><input class="FD-xiezuo-input" type="text" title="协作随机数"
+                            v-model="collaborationNumber">
+                    </div>
+                    <div class="FD-xz-buttons">
+                        <p class="FD-xz-p">
+                            <span>操作：</span>
+                            <button class="btn btn-default" title="协作" @click="getCtrl().setCollaborationNumber(collaborationNumber)"><i class="fa fa-users"></i> 远程协作</button>
+                            <button class="btn btn-default" title="取消" @click="getCtrl().setCollaborationNumber(0)"><i class="fa fa-times"></i> 取消</button>
+                        </p>
+						<p class="FD-xz-p">
+                            <span>操作：</span>
+    						<button class="btn btn-default" title="显示地形" @click="getCtrl().showTerrain(true)"><i class="fa fa-medium"></i> 显示地形 </button>
+                            <button class="btn btn-default" title="取消" @click="getCtrl().showTerrain(false)"><i class="fa fa-times"></i> 隐藏</button>
+                        </p>
+						<p class="FD-xz-p">
+                            <span>操作：</span>
+    						<button class="btn btn-default" title="绕点飞行" @click="getCtrl().flyCircle(true)"><i class="fa fa-dribbble"></i> 绕点飞行 </button>
+                            <button class="btn btn-default" title="取消" @click="getCtrl().flyCircle(false)"><i class="fa fa-times"></i> 取消</button>
+                        </p>
+                    </div>
+                    <p class="FD-title-name">分析</p>
+                    <div class="FD-fx-buttons">
+                        <button class="btn btn-default" title="线段量测" @click="getCtrl().setAnalysisMode('LINE_DISTANCE')"><i class="fa fa-expand"></i> 线段量测</button>
+                        <button class="btn btn-default" title="折线量测" @click="getCtrl().setAnalysisMode('SEGMENTS_DISTANCE')"><i class="fa fa-level-up"></i> 折线量测</button>
+						<button class="btn btn-default" title="取消" @click="getCtrl().setAnalysisMode('CANCEL')"><i class="fa fa-times"></i> 取消</button>
+                    </div>
+                    <!-- <my-component></my-component> -->
+                    <p class="FD-title-name">视点组</p>
+                    <ul class="FD-vp-groups">
+                        <li class="FD-vp-group" v-for="(viewpointsGroupID,item) in viewpointsGroupIDs" @click="pickViewpointsGroup(item)">
+                            <span class="FD-vp-group-title" @click="getCtrl().setCurrentViewpointGroupID(viewpointsGroupID)">{{ getCtrl().getViewpointsGroupName(viewpointsGroupID) }}</span>
+                            <i class="fa fa-play FD-vp-group-icon" @click="showBottom(viewpointsGroupID)"></i>
+                            <ul v-show="isSelected == item">
+                                <li class="FD-vp-group-points" v-for="(viewpoint, index) in viewpoints" :class="{ 'active': currentViewpointIndex === index}">
+                                    <span class="FD-vp-group-points-name" title="跳入" @click="getCtrl().gotoViewpoint(index)">视点 {{ index }} {{ viewpoint.name }}</span>
+                                    <span class="FD-vp-group-fonts" title="飞入" @click="getCtrl().flytoViewpoint(index)"><i class="fa fa-paper-plane"></i></span>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="menuStatus === 'settings'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('project_browsing')"><i class="fa fa-chevron-left"></i>                        完成</span>
+                    </p>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-default FD-scene-option-button" @click="setMenuStatus('project_settings')"><i class="fa fa-pencil-square-o"></i>  项目信息设置</button><br>
+                        <button class="btn btn-default FD-scene-option-button" @click="setMenuStatus('scene_settings')"><i class="fa fa-sitemap"></i>  场景结构设置</button><br>
+                        <button class="btn btn-default FD-scene-option-button" @click="setMenuStatus('viewpoints_settings')"><i class="fa fa-eye"></i>  视点组设置</button>
+                        <button class="btn btn-default FD-scene-option-button" @click="setMenuStatus('imageryLayers_settings')"><i class="fa fa-map"></i>  影像图层设置</button>
+                        <button class="btn btn-default FD-scene-option-button" @click="setMenuStatus('labels_settings')"><i class="fa fa-tags"></i>  标签设置</button>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'scene_settings'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('settings')"><i class="fa fa-chevron-left"></i> 完成</span>
+                    </p>
+                    <p class="FD-title-name">场景结构设置</p>
+
+                    <button title="新建场景对象" class="btn btn-default FD-add-new-scene" @click="setMenuStatus('scene_creating')"><i class="fa fa-plus"></i>  新加场景</button>
+                    <ul>
+                        <li class="FD-scene-option-container" v-for="sceneObj in sceneObjs">
+                            <p>
+                                <span class="FD-scene-option-title">是否显示：</span>
+                                <input type="checkbox" class="FD-checkbox" :id="sceneObj.id" :value="sceneObj.id" v-model="visibleSceneObjs">
+                                <label :for="sceneObj.id" class="green"></label>
+                            </p>
+                            <p>
+                                <span class="FD-scene-option-title">场景名：</span>
+                                <span class="FD-scene-option-name" :title="'场景url: ' + getCtrl().getSceneObjUrl(sceneObj.id)">{{ sceneObj.name }}</span>
+                            </p>
+                            <p>
+                                <span class="FD-scene-option-title">精度值：</span>
+                                <input class="FD-scene-option-num" title="精度控制" :value="getCtrl().getMaximumScreenSpaceError(sceneObj.id)" @input="getCtrl().setMaximumScreenSpaceError(sceneObj.id, parseFloat(arguments[0].target.value))"
+                                />
+                            </p>
+                            <p>
+                                <button class="btn btn-default" title="删除" @click="getCtrl().deleteSceneObj(sceneObj.id)"><i class="fa fa-trash-o"></i>  删除</button>
+                                <button class="btn btn-default" title="飞入" @click="getCtrl().flytoSceneObj(sceneObj.id)"><i class="fa fa-paper-plane"></i>  飞入</button>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="menuStatus === 'viewpoints_settings'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('settings')"><i class="fa fa-chevron-left"></i> 完成</span>
+                    </p>
+                    <p class="FD-current-scene">当前项目:<span class="FD-current-scene-name">{{ projectInfo.name }}</span></p>
+                    <p class="FD-title-name">视点组设置</p>
+
+                    <button title="新建视点组" class="btn btn-default FD-add-new-scene" @click="setMenuStatus('viewpointsGroup_creating')"><i class="fa fa-plus"></i>  新建视点组</button>
+
+                    <ul class="FD-vp-groups">
+                        <li class="FD-vp-group" v-for="(viewpointsGroupID,item) in viewpointsGroupIDs" @click="pickViewpointsGroup(item)">
+                            <span class="FD-vp-group-name" @click="getCtrl().setCurrentViewpointGroupID(viewpointsGroupID)">{{ getCtrl().getViewpointsGroupName(viewpointsGroupID) }}</span>
+                            <i class="fa fa-trash-o FD-vp-group-font" @click="getCtrl().deleteViewpointsGroup(viewpointsGroupID)"></i>
+                            <ul v-show="isSelected == item">
+                                <li class="FD-vp-group-points" v-for="(viewpoint, index) in viewpoints" :class="{ 'active': currentViewpointIndex === index}">
+                                    <span class="FD-vp-group-points-title">视点 {{ index }} {{ viewpoint.name }}</span>
+                                    <span class="FD-vp-group-fonts" title="删除" @click="getCtrl().deleteViewpoint(index)"><i class="fa fa-trash-o"></i></span>
+                                    <span class="FD-vp-group-fonts" title="飞入" @click="getCtrl().flytoViewpoint(index)"><i class="fa fa-paper-plane"></i></span>
+                                </li>
+                                <button title="新建视点" class="btn btn-default FD-add-new-scene" @click="getCtrl().addViewpoint()"><i class="fa fa-plus"></i>  新建视点</button>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="menuStatus === 'imageryLayers_settings'" class="FD-switch-container" v-show="isShowMenuSetting">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('settings')"><i class="fa fa-chevron-left"></i> 完成</span>
+                    </p>
+                    <p class="FD-title-name">影像图层设置</p>
+                    <button title="新建图层" class="btn btn-default FD-add-new-scene" @click="showImageLayer()"><i class="fa fa-plus"></i>  新加图层</button>
+                    <ul>
+                        <li class="FD-scene-option-container" v-for="(imageryLayer, index) in imageryLayers" v-bind:key="imageryLayer">
+                            <p>
+                                <span class="FD-scene-option-title">是否显示：</span>
+                                <input type="checkbox" class="FD-checkbox" :id="index" :value="index" v-model="visibleImageryLayers">
+                                <label :for="index" class="green"></label>
+                            </p>
+                            <p>
+                                <span class="FD-scene-option-title">图层名：</span>
+                                <span class="FD-scene-option-name" :title="'图层url: ' + getCtrl().getImageryLayerUrl(index)">{{ imageryLayer.name }}</span>
+                            </p>
+                            <p>
+                                <span class="FD-scene-option-title">透明度：</span>
+                                <input type="range" min="0" max="1" step="0.01" v-model="alphaImageryLayers[index]">
+                            </p>
+                            <p>
+                                <button class="btn btn-default" title="上移" @click="getCtrl().raiseImageryLayer(imageryLayers.length-index-1)" v-show="index != 0"><i class="fa fa-arrow-up"></i> 上移</button>
+                                <button class="btn btn-default" title="下移" @click="getCtrl().lowerImageryLayer(imageryLayers.length-index-1)" v-show="index != imageryLayers.length-1"><i class="fa fa-arrow-down"></i> 下移</button>
+                                <button class="btn btn-default" title="删除" @click="getCtrl().deleteImageryLayer(imageryLayers.length-index-1)"><i class="fa fa-trash-o"></i>  删除</button>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+                <div v-if="menuStatus === 'project_settings'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('settings')"><i class="fa fa-chevron-left"></i>                        完成</span>
+                    </p>
+                    <p class="FD-title-name">项目设置</p>
+                    <div class="FD-module-input FD-module-input-one">
+                        <span title="名称">名称：</span><input type="text" v-model="projectInfo.name">
+                    </div>
+                    <div class="FD-module-input FD-module-input-one">
+                        <span title="描述信息">描述信息：</span><input type="text" v-model="projectInfo.description">
+                    </div>
+                    <div class="FD-module-input">
+                        <span title="项目ID">项目ID：</span><input type="text" v-model="currentProjectID" :title="currentProjectID" readonly>
+                    </div>
+                    <div class="FD-module-input">
+                        <span title="所有者">所有者：</span><input type="text" v-model="projectInfo.owner" readonly>
+                    </div>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">是否公开</span>
+                        <input type="checkbox" class="FD-checkbox" id="orginalPosition" value="1" v-model="projectInfo.public">
+                        <label for="orginalPosition" class="green FD-orginalPosition"></label>
+                    </p>
+                    <p class="FD-title-name">初始相机方位</p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">手动设置</span>
+                        <input type="checkbox" class="FD-checkbox" id="handmode" value="1" v-model="projectInfo.initialCameraInfo.manualSet">
+                        <label for="handmode" class="green FD-orginalPosition"></label>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">经度</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[0]}}</span>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">纬度</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[1]}}</span>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">高度</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[2]}}</span>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">偏航角</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[3]}}</span>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">俯仰角</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[4]}}</span>
+                    </p>
+                    <p class="FD-camera-container">
+                        <span class="FD-camera-name">翻滚角</span>
+                        <span class="FD-camera-pos" :class="{ 'disble': !projectInfo.initialCameraInfo.manualSet}">{{currentProjectInitialCameraInfo[5]}}</span>
+                    </p>
+                    <p class="FD-camera-option">
+                        <i class="fa fa-refresh" @click="getCtrl().resetInitialCameraInfo()" title="重置相机初始方位"></i>
+                        <i class="fa fa-paper-plane" @click="getCtrl().flytoInitialCameraInfo()" title="飞入相机初始方位"></i>
+                    </p>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-danger FD-scene-option-button" @click="toggleDialogs('project')"><i class="fa fa-trash-o"></i>  删除项目</button><br>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'labels_settings'" class="FD-switch-container">
+                    <p class="FD-top-container">
+                        <span class="FD-back" @click="saveProjectAndSetMenuStatus('settings')"><i class="fa fa-chevron-left"></i>                        完成</span>
+                    </p>
+                    <!--<div>
+                        <li class="FD-vp-group-points" v-for="(tag, index) in labelPointTags" :class="{ 'active': activedLabelPointTags.indexOf(tag) !== -1}">
+                            <span class="FD-vp-group-points-title">{{ tag }}</span>
+                            <span class="FD-vp-group-fonts" title="激活" @click="getCtrl().actvieLabelPointTag(tag)"><i class="fa fa-paper-plane"></i></span>
+                            <span class="FD-vp-group-fonts" title="取消激活" @click="getCtrl().unactiveLabelPointTag(tag)"><i class="fa fa-paper-plane"></i></span>
+                        </li>
+                    </div>-->
+                    <ul>
+                        <li class="FD-vp-group-points" v-for="(labelPoint, index) in labelPoints">
+                            <span class="FD-vp-group-points-title">{{ labelPoint.name }}</span>
+                            <span class="FD-vp-group-fonts" title="激活" @click="getCtrl().enableLabelPoint(labelPoint.id)"><i class="fa fa-paper-plane"></i></span>
+                            <span class="FD-vp-group-fonts" title="删除" @click="getCtrl().deleteLabelPoint(labelPoint.id)"><i class="fa fa-trash-o"></i></span>
+                        </li>
+                    </ul>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-success FD-scene-option-button" @click="setMenuStatus('label_creating')"><i class="fa fa-plus"></i> 新建标签</button>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'scene_creating'" class="FD-switch-container">
+                    <p class="FD-title-name">新建场景</p>
+                    <div class="FD-module-input FD-module-input-one">
+                        <span>场景名:</span><input type="text" v-model="newSceneName">
+                    </div>
+                    <div class="FD-module-input FD-module-input-two">
+                        <span>场景url:</span><input type="text" v-model="newSceneUrl">
+                    </div>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-danger FD-scene-option-button" @click="setMenuStatus('scene_settings')"><i class="fa fa-times"></i>  取消操作</button><br>
+                        <button class="btn btn-success FD-scene-option-button" @click="addNewSceneObj(newSceneName, newSceneUrl, 16)"><i class="fa fa-plus"></i>  确认添加</button>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'viewpointsGroup_creating'" class="FD-switch-container">
+                    <p class="FD-title-name">新建视点组</p>
+                    <div class="FD-module-input FD-module-input-one">
+                        <span>名称:</span><input type="text" v-model="newViewpointsGroupName">
+                    </div>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-danger FD-scene-option-button" @click="setMenuStatus('viewpoints_settings')"><i class="fa fa-times"></i>  取消操作</button><br>
+                        <button class="btn btn-success FD-scene-option-button" @click="addNewViewpointsGroup(newViewpointsGroupName)"><i class="fa fa-plus"></i>  确认添加</button>
+                    </p>
+                </div>
+                <div v-if="menuStatus === 'label_creating'" class="FD-switch-container">
+                    <p class="FD-title-name">新建标签</p>
+                    <div class="FD-module-input FD-module-input-one FD-module-input-tags">
+                        <span>手动拾取:</span><input type="checkbox" class="FD-checkbox" id="handerPicker" value="index" v-model="handPick">
+                                <label for="handerPicker" class="green" @click="toggleHandPick()"></label>
+                    </div>
+                    <div class="FD-module-input FD-module-input-one FD-module-input-tags">
+                        <span>标签名:</span><input type="text" v-model="newLabelPointName">
+                    </div>
+                    <div class="FD-module-input FD-module-input-one FD-module-input-tags-num">
+                        <span>标签经度:</span><input type="text" v-model="newLabelPointPosition[0]">
+                    </div>
+                    <div class="FD-module-input FD-module-input-one FD-module-input-tags-num">
+                        <span>标签纬度:</span><input type="text" v-model="newLabelPointPosition[1]">
+                    </div>
+                    <div class="FD-module-input FD-module-input-one FD-module-input-tags-num">
+                        <span>标签高度:</span><input type="text" v-model="newLabelPointPosition[2]">
+                    </div>
+                    <p class="FD-scene-option-buttons">
+                        <button class="btn btn-danger FD-scene-option-button" @click="setMenuStatus('labels_settings')"><i class="fa fa-times"></i>  取消操作</button><br>
+                        <button class="btn btn-success FD-scene-option-button" @click="addNewLabel(newLabelPointName, newLabelPointPosition)"><i class="fa fa-plus"></i>  确认添加</button>
+                    </p>
+                </div>
+                <div class="FD-imagelayer-container" :class="{'open': isShowImageLayer}">
+                    <div class="FD-imagelayer">
+                        <ul>
+                            <li class="FD-project-list" :title="item.name" v-for="(item, index) in imageryLayersLists" @click="pickImageLayer(index)">
+                                <img :src="item.iconUrl">
+                                <span class="checked" :class="{'open': pickImageLayerIndex == index}" ><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                <span class="title">{{ item.name }}</span>
+                                <span class="info">{{ item.iconUrl }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="FD-imagelayer-buttons">
+                        <button class="btn btn-danger" @click="cancalSetImage()">取消</button>
+                        <button class="btn btn-success" @click="submitSetImage()">确认</button>
+                    </div>
+                </div>
+                <div class="FD-tooltip-container" :class="{'open': showToolTip}">
+                    <span>操作成功</span>
+                </div>
+            </div>
+            <div class="FD-top-bar" :class="{'open': projectInfo.name != '未命名项目'}">
+                <span>{{ projectInfo.name }}</span>
+            </div>
+            <div class="FD-nav" :class="{'hide': defaultMenu == 0}">
+                <span class="FD-nav-icon FD-global" title="指北针" @click="getCtrl().flyNorth()"><i id='compass' class="fa fa-location-arrow"></i></span>
+                <span class="FD-nav-icon FD-global" @click="getCtrl().flytoGlobe()" title="鸟瞰地球"><i class="fa fa-globe"></i></span>
+                <span class="FD-nav-icon FD-global" @click="toggleVR(true)" title="VR"><i class="fa fa-tripadvisor" style="font-size: 22px;"></i></span>
+                <span class="FD-nav-icon FD-global" @click="toggleDialogs('frame')" title="代码引用"><i class="fa fa-code" style="font-size: 22px;"></i></span>
+                <span class="FD-nav-icon FD-global" @click="toggleDialogs('share')" title="分享"><i class="fa fa-share-square-o" style="font-size: 22px;"></i></span>
+            </div>
+            <div class="FD-nav-vrmode" :class="{'vrMode': isSHowVRMode}">
+                <span class="FD-nav-icon FD-global" title="关闭VR模式" @click="toggleVR(false)"><i class="fa fa-times"></i></span>
+            </div>
+            <div class="FD-right-tips" :class="{'open': isShowTip}">
+                <p class="FD-right-tips-close"><i class="fa fa-times" @click="closeTip()"></i></p>
+                <p class="FD-right-tips-contents">
+                    <span class="FD-right-tips-id">ID: {{ currentSelectedID }}</span>
+                </p>
+            </div>
+            <div class="FD-bottom-logo">
+                <img src="images/feido.svg">
+            </div>
+            <div class="FD-bottom-num" :class="{'open': renderCameraInfo[0] != 0}">
+                <span>{{ renderCameraInfo[0] }}</span>&nbsp;&nbsp;
+                <span>{{ renderCameraInfo[1] }}</span>&nbsp;&nbsp;
+                <span>{{ renderCameraInfo[2] }}</span>
+            </div>
+            <div class="FD-buttom-bar" :class="{'open': isShowBottom}">
+                <span class="FD-bar-icon" title="播放" @click="getCtrl().playCurrentViewpointsGroup()"><i class="fa fa-play"></i></span>
+                <span class="FD-bar-icon" title="暂停" @click="getCtrl().pauseCurrentViewpointsGroup()"><i class="fa fa-pause"></i></span>
+                <span class="FD-bar-icon" title="停止" @click="getCtrl().stopCurrentViewpointsGroup()"><i class="fa fa-stop"></i></span>
+                <span class="FD-bar-icon" title="循环播放" :class="{'spot': viewpointsPlayingLoop}" @click="getCtrl().setViewpointsPlayingLoop(!viewpointsPlayingLoop)"><i class="fa fa-repeat"></i></span>
+                <span class="FD-bar-icon" v-show="autoShowClose" title="关闭" @click="hideBottomBar()"><i class="fa fa-times"></i></span>
+            </div>
+            <div class="FD-dialogs" :class="{'open': showDialogs}">
+                <div class="FD-delProject-dialogs" v-show="showProDel">
+                    <div class="FD-dialogs-box">
+                        <p class="FD-dialogs-title">
+                            <span>提示</span>
+                        </p>
+                        <p class="FD-dialogs-contents">
+                            <span>确认要删除当前项目吗？</span>
+                        </p>
+                        <p class="FD-dialogs-buttons">
+                            <button class="btn btn-danger" @click="toggleDialogs('closeAll')">取消</button>
+                            <button class="btn btn-success" @click="deleteProject()">确认</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="main" :class="{'vrMode': isSHowVRMode}">
+                <div id="freedoContainer" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/x-template" id="scene-template">
+        <li>
+            <div class="FD-scene-div"
+                 :class="{'haschild': isFolder}"
+                 @click="toggle(model.uid,model)">
+                <span v-if="isFolder">
+                    <i class="fa fa-caret-down" v-if="open"></i>
+                    <i class="fa fa-caret-right" v-else></i>
+                </span>
+                <span>{{model.name}}</span>
+            </div>
+            <ul class="FD-scene-child" v-show="open" v-if="isFolder">
+                <item class="FD-scene-item"
+                      v-for="(model,index) in model.childE"
+                      :model="model"
+                      :key="index">
+                </item>
+            </ul>
+        </li>
+    </script>
+</body>
+
+</html>

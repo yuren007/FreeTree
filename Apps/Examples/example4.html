@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>设置PModel中部件的颜色和显隐</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .main {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <link href="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/Widgets/widgets.css" rel="stylesheet">
+    <script src="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/FreeDo.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="../../dist/GBIM360/API/FreedoX.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div id="freedoContainer" style="height: 100%;"></div>
+    </div>
+    <script>
+        var container = document.getElementById("freedoContainer");
+        var project = Freedo.FdApp.createProject(container);
+        var sceneManager = project.getSceneManager();
+        var sceneObjectID = sceneManager.addSceneObject("申鑫大厦3", "PModel", {
+            url: "http://gbim360.com:9999/txf/170620/xinpufei_3dtiles_gzip/3",
+            show: true,
+            maximumScreenSpaceError: 16
+        });
+
+        function componentStyleStep1() {
+            if (!sceneManager.highlightComponent("1chhYX92X9vuE5_lgL6yJO", sceneObjectID, 255, 255, 0, 1)) {
+                alert("highlightComponent failed!");
+            }
+        }
+
+        function componentStyleStep2() {
+            sceneManager.highlightComponent("1chhYX92X9vuE5_lgL6yHq", sceneObjectID, 255, 0, 0, 0.5);
+        }
+
+        function componentStyleStep3() {
+            sceneManager.unhighlightAllComponents();
+            sceneManager.showComponent("1chhYX92X9vuE5_lgL6yJO", sceneObjectID, false);
+        }
+
+        function componentStyleStep4() {
+            sceneManager.showComponent("1chhYX92X9vuE5_lgL6yHq", sceneObjectID, false);
+        }
+
+        function componentStyleStep5() {
+            sceneManager.showAllComponents();
+        }
+
+        function showOrHideComponent() {
+            var steps = [componentStyleStep1, componentStyleStep2, componentStyleStep3, componentStyleStep4, componentStyleStep5];
+            var step = 0;
+            setInterval(function () {
+                step += 1;
+                if (step >= steps.length) {
+                    step = 0;
+                }
+                steps[step]();
+            }, 1000);
+        }
+
+        setTimeout(function () {
+            sceneManager.flyto(sceneObjectID, {
+                duration: 5
+            });
+            setTimeout(showOrHideComponent, 7000);
+        }, 3000);
+    </script>
+</body>
+
+</html>

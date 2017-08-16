@@ -1,0 +1,215 @@
+{
+    "XXFSDDFDSFSDFEFDSDGJLJ": {
+        "name": "资源三号卫星影像内",
+        "type": "WMTS",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/blackMarble.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "http://192.168.30.50:7090/rest/wmts/",
+            "layer": "资源三号卫星影像",
+            "style": "default",
+            "format": "tiles",
+            "tileMatrixSetID": "资源三号卫星影像",
+            "minimumLevel": 0,
+            "maximumLevel": 18,
+            "tilingScheme": "Geographic"
+        }
+    },
+    "XXFSDDFDSFSDFEFDSDGJLJ": {
+        "name": "资源三号卫星影像外",
+        "type": "WMTS",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/blackMarble.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "http://106.37.179.154:7090/rest/wmts/",
+            "layer": "资源三号卫星影像",
+            "style": "default",
+            "format": "tiles",
+            "tileMatrixSetID": "资源三号卫星影像",
+            "minimumLevel": 0,
+            "maximumLevel": 18,
+            "tilingScheme": "Geographic"
+        }
+    },
+    "asdfasdfasweXXXXXXXXdfwerew": {
+        "name": "Bing Maps Aerial",
+        "type": "BingMaps",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/bingAerial.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://dev.virtualearth.net",
+            "mapStyle": "AERIAL"
+        }
+    },
+    "asdfasdfasweXXXXXXXXdfwerew2": {
+        "name": "Bing Maps Aerial with Labels",
+        "type": "BingMaps",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/bingAerialLabels.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://dev.virtualearth.net",
+            "mapStyle": "AERIAL_WITH_LABELS"
+        }
+    },
+    "asdfasdfasweXXXXXXXXdfwerew3": {
+        "name": "Bing Maps Aerial with Labels",
+        "type": "BingMaps",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/bingRoads.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://dev.virtualearth.net",
+            "mapStyle": "ROAD"
+        }
+    },
+    "WQEdfafdsasfaeareatagasdfasewfvasd1": {
+        "name": "Mapbox Satellite",
+        "type": "Mapbox",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/mapboxSatellite.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "mapId": "mapbox.satellite"
+        }
+    },
+    "WQEdfafdsasfaeareatagasdfasewfvasd2": {
+        "name": "Mapbox Street",
+        "type": "Mapbox",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/mapboxStreets.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "mapId": "mapbox.streets"
+        }
+    },
+    "WQEdfafdsasfaeareatagasdfasewfvasd3": {
+        "name": "Mapbox Street Basic",
+        "type": "Mapbox",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/mapboxStreets.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "mapId": "mapbox.streets-basic"
+        }
+    },
+    "dsfafewafdafaefasefasfasdfawefasdfasfjkhjkjkl1": {
+        "name": "ESRI World Imagery",
+        "type": "ESRI",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/esriWorldImagery.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer",
+            "enablePickFeatures": false
+        }
+    },
+    "dsfafewafdafaefasefasfasdfawefasdfasfjkhjkjkl2": {
+        "name": "ESRI World Street Map",
+        "type": "ESRI",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/esriWorldStreetMap.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+            "enablePickFeatures": false
+        }
+    },
+    "dsfafewafdafaefasefasfasdfawefasdfasfjkhjkjkl3": {
+        "name": "ESRI National Geographic",
+        "type": "ESRI",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/esriNationalGeographic.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/",
+            "enablePickFeatures": false
+        }
+    },
+    "dfasfeeawfdasfjaslkdfjlkajelkfjaslkjdflksajlf1": {
+        "name": "OpenStreet Map",
+        "type": "OpenStreetMap",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/openStreetMap.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://a.tile.openstreetmap.org/"
+        }
+    },
+    "dfasfeeawfdasfjaslkdfjlkajelkfjaslkjdflksajlf2": {
+        "name": "Stamen Watercolor",
+        "type": "OpenStreetMap",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/stamenWatercolor.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://stamen-tiles.a.ssl.fastly.net/watercolor/"
+        }
+    },
+    "dfasfeeawfdasfjaslkdfjlkajelkfjaslkjdflksajlf3": {
+        "name": "Stamen Toner",
+        "type": "OpenStreetMap",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/stamenToner.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://stamen-tiles.a.ssl.fastly.net/toner/"
+        }
+    },
+    "dfaesjkljlkjiojrgkjafsdgkajoier1": {
+        "name": "The Black Marble",
+        "type": "TileMapService",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/blackMarble.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "https://cesiumjs.org/blackmarble",
+            "flipXY": true
+        }
+    },
+    "dfaesjkljlkjiojrgkjafsdgkajoier2": {
+        "name": "Natural Earth II",
+        "type": "TileMapService",
+        "iconUrl": "http://gbim360.com:9999/txf/170626/FreeDo/Widgets/Images/ImageryProviders/naturalEarthII.png",
+        "layerOption": {
+            "show": true,
+            "alpha": 1.0
+        },
+        "providerOptions": {
+            "url": "http://gbim360.com:9999/txf/170626/FreeDo/Assets/Textures/NaturalEarthII"
+        }
+    }
+}

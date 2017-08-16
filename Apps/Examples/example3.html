@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>设置PModel的显隐</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .main {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <link href="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/Widgets/widgets.css" rel="stylesheet">
+    <script src="http://gbim360.com:9999/projects/FreedoGBIM360/1.0.0-alpha.170626/FreeDo/FreeDo.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="../../dist/GBIM360/API/FreedoX.js"></script>
+</head>
+
+<body>
+    <div class="main">
+        <div id="freedoContainer" style="height: 100%;"></div>
+    </div>
+    <script>
+        var container = document.getElementById("freedoContainer");
+        var project = Freedo.FdApp.createProject(container);
+        var sceneManager = project.getSceneManager();
+        var sceneObjectID = sceneManager.addSceneObject("申鑫大厦", "PModel", {
+            url: "http://gbim360.com:9999/txf/170620/xinpufei_3dtiles_gzip/1",
+            show: true,
+            maximumScreenSpaceError: 16
+        });
+        setTimeout(function () {
+            sceneManager.flyto(sceneObjectID, {duration: 5});
+
+            var show = false;
+            setInterval(function () {
+                show = !show;
+                sceneManager.setSceneObjectProperty(sceneObjectID, "show", show);
+            }, 2000);
+        }, 3000);
+    </script>
+</body>
+
+</html>

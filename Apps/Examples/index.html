@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Freedo GBIM360 API使用示例</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        p {
+            font-family: 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="max-width: 800px; margin: 0px auto">
+        <h1 style="text-align: center">Freedo GBIM360 API使用示例</h1>
+        <p><b><a href="./example1.html" target="_blank">Example1: 创建一个空场景</a></b></p>
+        <p>演示如何创建一个空场景。这是建立一个三维场景的基础模板，可以在此模板的基础上修改而生成自身需要的应用。</p>
+        <p><b><a href="./example2.html" target="_blank">Example2: 添加一个PModel（场景对象）</a></b></p>
+        <p>演示如何添加一个PModel数据。并飞入到PModel所在位置。</p>
+        <p><b><a href="./example3.html" target="_blank">Example3: 设置PModel的显隐</a></b></p>
+        <p>演示如何设置PModel的显示和隐藏。此例子会每隔2秒来控制PModel的显示或者隐藏。</p>
+        <p><b><a href="./example4.html" target="_blank">Example4: 设置PModel中部件的颜色和显隐</a></b></p>
+        <p>演示如何设置部件的颜色，如何显示和隐藏部件。此例子分为五个step，每隔2秒后执行下一个step。step1会设置某部件的颜色为黄色，step2设置某部件的颜色为红色且透明为0.5，step3设置某部件的隐藏，step4设置另外一个部件的隐藏，step恢复初始状态。</p>
+        <p><b><a href="./example5.html" target="_blank">Example5: 创建标签</a></b></p>
+        <p>演示在三维场景中如何创建标签。标签以div形式存在，会随着三维场景中位置的变化而发生相应的移动。</p>
+        <p><b><a href="./example6.html" target="_blank">Example6: 创建视点</a></b></p>
+        <p>演示如何创建视点。视点相当于记录相机的方向和位置，可以通过调用函数飞向视点。</p>
+        <p><b><a href="./example7.html" target="_blank">Example7: 视点组的循环播放</a></b></p>
+        <p>演示如何创建视点组，并开启视点组的循环播放功能，从而实现循环播放。</p>
+        <p><b><a href="./example8.html" target="_blank">Example8: 项目的事件监听</a></b></p>
+        <p>演示如何监听事件。当项目的名字发生修改时，会触发proejctInfoChanged事件，可以在回调中对此事件做出响应。</p>
+        <p><b><a href="./example9.html" target="_blank">Example9: 相机的事件监听</a></b></p>
+        <p>演示如何监听事件。当用鼠标或触摸漫游地球时，会发现相机变更事件被触发，从而引起右上角相机信息提示框的变化。</p>
+        <p><b><a href="./example10.html" target="_blank">Example10: 场景对象的拾取</a></b></p>
+        <p>演示对场景对象的拾取。当用户使用鼠标点选部件时，会改变对象的颜色；当用户点选场景对象以外的地方，会恢复所有对象之前的颜色。</p>
+        <p><b><a href="./example11.html" target="_blank">Example11: 标签样式定制</a></b></p>
+        <p>演示如何创建标签和样式展示</p>
+    </div>
+</body>
+
+</html>

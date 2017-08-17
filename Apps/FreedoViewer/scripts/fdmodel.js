@@ -92,7 +92,7 @@ define(function () {
     FDModel.prototype.init = function () {
         var config = {
             authDomain: "txf1.wilddog.com",
-            syncURL: "https://txf3.wilddogio.com"
+            syncURL: "https://txf2.wilddogio.com"
         }
         wilddog.initializeApp(config);
 
@@ -135,13 +135,17 @@ define(function () {
         return res;
     }
     /*场景树获取数据start*/
-    FDModel.prototype.getXMLData = function (id, childData) {
-        var url = 'http://freedoonline.com:3003/services/pmts/1.0.0/PMTSCapabilities'
+    FDModel.prototype.getXMLData = function (clickHere) {
+        var res = {parentE:[],childE:null};
+        var parentObj = {};
         var flag = false;
-        var res = [];
+        var url = 'http://freedoonline.com:3003/services/pmts/1.0.0/PMTSCapabilities'
         var layer = null;
         var TileMatrixSetName = null;
         var uid = null;
+        var layerName = null;
+        var urlObj = {};
+        /*获取xml数据*/
         ajax({
             async: false, //异步请求
             url: url,  //请求地址
@@ -155,123 +159,6 @@ define(function () {
                 var TileMatrixSet = xmlDom.getElementsByTagName('TileMatrixSet')[0];
                 TileMatrixSetName = TileMatrixSet.getElementsByTagName('ows:Identifier')[0].innerHTML;
                 uid = TileMatrixSet.getElementsByTagName('uid')[0].innerHTML;
-                /*发送第二个请求获取json数据*/
-                if (flag) {
-                    for (let i=0; i<layer.length; i++) {
-                        var layerNameAll = layer[i].getElementsByTagName('ows:Identifier')[0];
-                        var layerName = layerNameAll.innerHTML;
-                        url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                    }
-                    ajax({
-                        async: false, //异步请求
-                        url: url,  //请求地址
-                        type: "GET", //请求方式
-                        data: {},        //请求参数
-                        dataType: "json",
-                        success: function (response, xml) {
-
-                            res = JSON.parse(response);
-                            /*获取cids，并将其放入res.parentE数组中*/
-                            //遍历res获取新的uid
-                            res.forEach((e, index) => {
-                                uid = e.uid;
-                                url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                                if (e.cids !== undefined) {
-                                    ajax({
-                                        async: false,
-                                        url: url,
-                                        type: 'GET',
-                                        data: {},
-                                        dataType: 'json',
-                                        success: function (response, xml) {
-                                                e.childE = JSON.parse(response);
-                                                e.childE.forEach((e,index) => {
-                                                    uid = e.uid;
-                                                    url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                                                    if (e.cids !== undefined) {
-                                                        ajax({
-                                                            async: false, //异步请求
-                                                            url: url,  //请求地址
-                                                            type: "GET", //请求方式
-                                                            data: {},        //请求参数
-                                                            dataType: "json",
-                                                            success:function (response, xml) {
-                                                               console.log("看到我了")
-                                                               e.childE = JSON.parse(response)
-                                                               e.childE.forEach((e ,index) => {
-                                                               uid = e.uid;
-                                                               url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                                                               if (e.cids !== undefined) {
-                                                                   ajax({
-                                                                       async: false,
-                                                                       url: url,
-                                                                       type: 'GET',
-                                                                       data: {},
-                                                                       dataType: 'json',
-                                                                       success: function (response, xml) {
-                                                                           //console.log('继续发送请求')
-                                                                          e.childE = JSON.parse(response)
-                                                                          e.childE.forEach((e ,index) => {
-                                                                              uid = e.uid;
-                                                                              url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                                                                              if (e.cids !== undefined) {
-                                                                                  ajax({
-                                                                                      async: false,
-                                                                                      url: url,
-                                                                                      type: 'GET',
-                                                                                      data: {},
-                                                                                      dataType: 'json',
-                                                                                      success: function (response, xml) {
-                                                                                          e.childE = JSON.parse(response)
-                                                                                          e.childE.forEach((e ,index) => {
-                                                                                              uid = e.uid;
-                                                                                              url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ uid;
-                                                                                              if (e.cids !== undefined) {
-                                                                                                  ajax({
-                                                                                                      async: false,
-                                                                                                      url: url,
-                                                                                                      type: 'GET',
-                                                                                                      data: {},
-                                                                                                      dataType: 'json',
-                                                                                                      success: function (response, xml) {
-                                                                                                          e.childE = JSON.parse(response)
-                                                                                                      }
-                                                                                                  })
-                                                                                              }
-
-                                                                                          })
-                                                                                      }
-                                                                                  })
-                                                                              }
-
-                                                                          })
-                                                                      }
-                                                                   })
-                                                               }
-
-                                               })
-                                                            }
-                                                        })
-                                                    }
-                                                })
-
-
-
-                                        },
-                                        fail: function (status) {
-                                            //错误信息
-                                        }
-                                    })
-                                }
-                            })
-                        },
-                        fail: function (status) {
-                            // 此处放失败后执行的代码
-                            console.log(status)
-                            res = {};
-                        }
-                    })
-                }
             },
             fail: function (status) {
                 // 此处放失败后执行的代码
@@ -279,9 +166,65 @@ define(function () {
                 res = {};
             }
         });
+        /*获取父节点信息*/
+        if (flag) {
+            for (let i=0; i<layer.length; i++) {
+                var layerNameAll = layer[i].getElementsByTagName('ows:Identifier')[0];
+                layerName = layerNameAll.innerHTML;
+                url = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/' + layerName + '/' + TileMatrixSetName + '/' + uid;
+                ajax({
+                    async: false, //异步请求
+                    url: url,  //请求地址
+                    type: "GET", //请求方式
+                    data: {},        //请求参数
+                    dataType: "json",
+                    success: function (response, xml) {
+                        var parentContent = JSON.parse(response);
+                        var temp = {};
+                        parentContent.forEach((e) => {
+                            e.group = i;
+                            urlObj['layerName' + i] = layerName;//子节点信息与父节点信息请求一一对应
+                            urlObj['tileMatrixSetName'+ i] = TileMatrixSetName;
+                        })
+                        temp['childE'] = parentContent;
+                        temp.uid = uid;
+                        temp.group = i;
+                        temp.cids = ['1'];
+                        temp.name = layerName;
+                        res.parentE.push(temp);
+                    },
+                    fail: function (status) {
+                        // 此处放失败后执行的代码
+                        console.log(status)
+                        res = {};
+                    }
+                });
+            }
+        }
+        /*发送第二个请求获取子节点json数据*/
+        if (clickHere){
+            /*获取子节点信息*/
+            var childrenGroup = clickHere.group;
+            var clickUid = clickHere.uid;
+            layerName = urlObj['layerName' + childrenGroup];
+            TileMatrixSetName = urlObj['tileMatrixSetName' + childrenGroup];
+            var childUrl = 'http://freedoonline.com:3003/services/pmts/1.0.0/cid/'+layerName+'/'+TileMatrixSetName+'/'+ clickUid;
+            ajax({
+                async: false, //异步请求
+                url: childUrl,  //请求地址
+                type: "GET", //请求方式
+                data: {},        //请求参数
+                dataType: "json",
+                success: function (response, xml) {
+                    res.childE = JSON.parse(response);
+                    res.childE.forEach((e) => {
+                        e.group = childrenGroup + '';
+                    })
+                }
+            })
+        }
         return res;
     }
-
     /*场景树获取数据end*/
     FDModel.prototype.refreshProjects = function () {
         var that = this;

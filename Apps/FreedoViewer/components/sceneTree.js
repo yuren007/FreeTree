@@ -2,49 +2,12 @@ define([],function () {
 	function FDscenetree() {
 	}
 	FDscenetree.prototype.dataProc = function () {
+	    var data = []
 		var resouce = window.ctrl.getXMLData();
-		window.ctrl._ui.XMLData = resouce;
-		/*Vue.component('item', {
-		  	template: '#scene-template',
-		  	props: {
-		    	model: Object
-		  	},
-		  	data: function () {
-		    	return {
-		      		open: false
-		    	}
-		  	},
-		  	computed: {
-		    	isFolder: function () {
-		      		return this.model.cids
-		    	}
-		  	},
-		  	methods: {
-		  		dataOptions: function(item, id) {
-		  			for(var i in item){
-		  				if(item[i].id == id){
-		  					if(item[i].cids != '')return false;
-		  					for(var j in resouce){
-		  						var temp = {};
-		  						temp.name = resouce[j].name;
-		  						temp.id = resouce[j].id;
-		  						temp.cids = resouce[j].cids;
-		  						item[i].cids.push(temp);
-		  					}
-		  				} else {
-		  					this.dataOptions(resouce[i].cids, id);
-		  				}
-		  			}
-		  		},
-		    	toggle: function (id) {
-		      		if (this.isFolder) {
-		        		this.open = !this.open;
-						resouce = window.ctrl.getXMLData(id);
-						this.dataOptions(data, id);
-		      		}
-		    	}
-		  	}
-		})*/
+        resouce.parentE.forEach((e) => {
+            data.push(e);
+        })
+		window.ctrl._ui.XMLData = data;
         Vue.component('item', {
               template: '#scene-template',
               props: {
@@ -61,10 +24,12 @@ define([],function () {
                 }
               },
               methods: {
-                toggle: function (id,childData) {
-                      if (this.isFolder) {
+                toggle: function (clickHere) {
+                    resouce = window.ctrl.getXMLData(clickHere)
+                    if (this.isFolder) {
+                        this.model.childE = resouce.childE;
                         this.open = !this.open;
-                      }
+                    }
                 }
               }
         })

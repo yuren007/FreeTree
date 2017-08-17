@@ -494,10 +494,11 @@
     </div>
     <script type="text/x-template" id="scene-template">
         <li>
-            <div class="FD-scene-div"
-                 :class="{'haschild': isFolder}"
-                 @click="toggle(model.uid,model)">
-                <span v-if="isFolder">
+            <div>
+                <span v-if="isFolder"
+                      class="FD-scene-div"
+                      :class="{'haschild': isFolder}"
+                      @click="toggle(model)">
                     <i class="fa fa-caret-down" v-if="open"></i>
                     <i class="fa fa-caret-right" v-else></i>
                 </span>
